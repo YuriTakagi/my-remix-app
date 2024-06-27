@@ -11,6 +11,7 @@ import {
   useLoaderData,
   useNavigation,
 } from "@remix-run/react";
+import { useEffect } from "react";
 import appStylesHref from "./app.css?url"; // app.cssの読み込み
 
 import { createEmptyContact ,getContacts } from "./data"; // data.tsからcreateEmptyContact, getContacts関数を読み込み
@@ -21,7 +22,7 @@ export const loader = async ({
   const url = new URL(request.url);
   const q = url.searchParams.get("q")
   const contacts = await getContacts(q);
-  return json({ contacts });
+  return json({ contacts, q });
 }; // loader関数で取得したcontactsを返す
 
 export const links: LinksFunction = () => [
@@ -34,8 +35,16 @@ export const action = async () => {
 }; // action関数でからのcontactを作成する
 
 export default function App() {
-  const { contacts } = useLoaderData<typeof loader>();
+  const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const searchField = document.getElementById("q");
+    if (searchField instanceof HTMLInputElement) {
+      searchField.value = q || "";
+    }
+  }, [q]);
+
   return (
     <html lang="ja">
       <head>
@@ -53,6 +62,7 @@ export default function App() {
                 id="q"
                 aria-label="Search contacts"
                 placeholder="Search"
+                defaultValue={q || ""}
                 type="search"
                 name="q"
               />
