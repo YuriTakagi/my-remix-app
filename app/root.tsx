@@ -1,5 +1,5 @@
 import type { LinksFunction } from "@remix-run/node";
-import { json } from "@remix-run/node"; // オブジェクトをシリアライズするためのjson()メソッドをimport
+import { json, redirect } from "@remix-run/node"; // オブジェクトをシリアライズするためのjson()メソッドをimport
 import {
   Form,
   Link,
@@ -25,7 +25,7 @@ export const links: LinksFunction = () => [
 
 export const action = async () => {
   const contact = await createEmptyContact();
-  return json({ contact });
+  return redirect(`/contacts/${contact.id}/edit`);
 }; // action関数でからのcontactを作成する
 
 export default function App() {
