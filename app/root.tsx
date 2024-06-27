@@ -26,7 +26,7 @@ export const links: LinksFunction = () => [
 export const action = async () => {
   const contact = await createEmptyContact();
   return json({ contact });
-};
+}; // action関数でからのcontactを作成する
 
 export default function App() {
   const { contacts } = useLoaderData<typeof loader>();
