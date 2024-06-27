@@ -1,4 +1,4 @@
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node"; // オブジェクトをシリアライズするためのjson()メソッドをimport
 import {
   Form,
@@ -15,8 +15,12 @@ import appStylesHref from "./app.css?url"; // app.cssの読み込み
 
 import { createEmptyContact ,getContacts } from "./data"; // data.tsからcreateEmptyContact, getContacts関数を読み込み
 
-export const loader = async () => {
-  const contacts = await getContacts();
+export const loader = async ({
+  request,
+}: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q")
+  const contacts = await getContacts(q);
   return json({ contacts });
 }; // loader関数で取得したcontactsを返す
 
