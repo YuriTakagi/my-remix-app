@@ -39,6 +39,7 @@ export default function App() {
   const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const submit = useSubmit();
+  const searching = navigation.location && new URLSearchParams(navigation.location.search).has("q");
 
   useEffect(() => {
     const searchField = document.getElementById("q");
@@ -65,6 +66,7 @@ export default function App() {
               onChange={(event) => submit(event.currentTarget)}
             >
               <input
+                className={ searching ? "loading" : "" }
                 id="q"
                 aria-label="Search contacts"
                 placeholder="Search"
@@ -72,7 +74,7 @@ export default function App() {
                 type="search"
                 name="q"
               />
-              <div id="search-spinner" aria-hidden hidden={true} />
+              <div id="search-spinner" aria-hidden hidden={!searching} />
             </Form>
             <Form method="post">
               <button type="submit">New</button>
@@ -113,7 +115,7 @@ export default function App() {
           </nav>
         </div>
         <div
-          className={navigation.state === "loading" ? "loading" : ""}
+          className={navigation.state === "loading" && !searching ? "loading" : ""}
           id="detail"
         >
           <Outlet />
