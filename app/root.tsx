@@ -12,7 +12,7 @@ import {
 } from "@remix-run/react";
 import appStylesHref from "./app.css?url"; // app.cssの読み込み
 
-import { getContacts } from "./data"; // data.tsからgetContacts関数を読み込み
+import { createEmptyContact ,getContacts } from "./data"; // data.tsからcreateEmptyContact, getContacts関数を読み込み
 
 export const loader = async () => {
   const contacts = await getContacts();
@@ -22,6 +22,11 @@ export const loader = async () => {
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
 ]; // links関数で定義したものが<Links />に入る
+
+export const action = async () => {
+  const contact = await createEmptyContact();
+  return json({ contact });
+};
 
 export default function App() {
   const { contacts } = useLoaderData<typeof loader>();
