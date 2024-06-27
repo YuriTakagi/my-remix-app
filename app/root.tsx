@@ -1,4 +1,5 @@
 import type { LinksFunction } from "@remix-run/node";
+import { json } from "@remix-run/node"; // オブジェクトをシリアライズするためのjson()メソッドをimport
 import {
   Form,
   Link,
@@ -7,14 +8,23 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import appStylesHref from "./app.css?url"; // app.cssの読み込み
+
+import { getContacts } from "./data"; // data.tsからgetContacts関数を読み込み
+
+export const loader = async () => {
+  const contacts = await getContacts();
+  return json({ contacts });
+}; // loader関数で取得したcontactsを返す
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
 ]; // links関数で定義したものが<Links />に入る
 
 export default function App() {
+  const { contacts } = useLoaderData<typeof loader>();
   return (
     <html lang="ja">
       <head>
@@ -42,14 +52,28 @@ export default function App() {
             </Form>
           </div>
           <nav>
-            <ul>
-              <li>
-                <Link to={`/contacts/1`}>Your Name</Link>
-              </li>
-              <li>
-                <Link to={`/contacts/2`}>Your Friend</Link>
-              </li>
-            </ul>
+            {contacts.length ? (
+              <ul>
+                {contacts.map((contact) => (
+                  <li key={contact.id}>
+                    <Link to={`/contacts/${contact.id}`}>
+                      {contact.first || contact.last ? (
+                        <>
+                          {contact.first} {contact.last}
+                        </>
+                      ) : (
+                        <i>No Name</i>
+                      )}{" "}
+                      {contact.favorite ? (
+                        <span>★</span>
+                      ) : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p><i>No contacts</i></p>
+            )}
           </nav>
         </div>
         <div id="detail">
